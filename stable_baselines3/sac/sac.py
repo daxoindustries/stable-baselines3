@@ -12,6 +12,8 @@ from stable_baselines3.common.policies import BasePolicy, ContinuousCritic
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from stable_baselines3.common.utils import get_parameters_by_name, polyak_update
 from stable_baselines3.sac.policies import Actor, CnnPolicy, MlpPolicy, MultiInputPolicy, SACPolicy
+from stable_baselines3.sac.sigmoid_policies import SigmoidSACPolicy
+from stable_baselines3.sac.latent_sac_policy import LatentSACPolicy
 
 SelfSAC = TypeVar("SelfSAC", bound="SAC")
 
@@ -82,6 +84,8 @@ class SAC(OffPolicyAlgorithm):
         "MlpPolicy": MlpPolicy,
         "CnnPolicy": CnnPolicy,
         "MultiInputPolicy": MultiInputPolicy,
+        "LatentSACPolicy": LatentSACPolicy,
+        "SigmoidSACPolicy": SigmoidSACPolicy,
     }
     policy: SACPolicy
     actor: Actor
