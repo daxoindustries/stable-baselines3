@@ -84,8 +84,8 @@ class SAC(OffPolicyAlgorithm):
         "MlpPolicy": MlpPolicy,
         "CnnPolicy": CnnPolicy,
         "MultiInputPolicy": MultiInputPolicy,
-        "LatentSACPolicy": LatentSACPolicy,
         "SigmoidSACPolicy": SigmoidSACPolicy,
+        "LatentSACPolicy": LatentSACPolicy,
     }
     policy: SACPolicy
     actor: Actor
