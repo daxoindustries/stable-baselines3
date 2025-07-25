@@ -62,6 +62,8 @@ class SAC(OffPolicyAlgorithm):
     :param target_update_interval: update the target network every ``target_network_update_freq``
         gradient steps.
     :param target_entropy: target entropy when learning ``ent_coef`` (``ent_coef = 'auto'``)
+    :param ent_coef_max: Maximum value for the entropy coefficient when learning it automatically.
+        If None, no cap is applied. Only used when ``ent_coef = 'auto'``
     :param use_sde: Whether to use generalized State Dependent Exploration (gSDE)
         instead of action noise exploration (default: False)
     :param sde_sample_freq: Sample a new noise matrix every n steps when using gSDE
@@ -112,6 +114,7 @@ class SAC(OffPolicyAlgorithm):
         ent_coef: Union[str, float] = "auto",
         target_update_interval: int = 1,
         target_entropy: Union[str, float] = "auto",
+        ent_coef_max: Optional[float] = None,
         use_sde: bool = False,
         sde_sample_freq: int = -1,
         use_sde_at_warmup: bool = False,
@@ -157,6 +160,7 @@ class SAC(OffPolicyAlgorithm):
         # Entropy coefficient / Entropy temperature
         # Inverse of the reward scale
         self.ent_coef = ent_coef
+        self.ent_coef_max = ent_coef_max
         self.target_update_interval = target_update_interval
         self.ent_coef_optimizer: Optional[th.optim.Adam] = None
 
@@ -237,6 +241,9 @@ class SAC(OffPolicyAlgorithm):
                 # so we don't change it with other losses
                 # see https://github.com/rail-berkeley/softlearning/issues/60
                 ent_coef = th.exp(self.log_ent_coef.detach())
+                # Apply cap if specified
+                if self.ent_coef_max is not None:
+                    ent_coef = th.clamp(ent_coef, max=self.ent_coef_max)
                 assert isinstance(self.target_entropy, float)
                 ent_coef_loss = -(self.log_ent_coef * (log_prob + self.target_entropy).detach()).mean()
                 ent_coef_losses.append(ent_coef_loss.item())
