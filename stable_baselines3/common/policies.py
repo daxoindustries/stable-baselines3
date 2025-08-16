@@ -934,7 +934,9 @@ class ContinuousCritic(BaseModel):
     :param n_critics: Number of critic networks to create.
     :param share_features_extractor: Whether the features extractor is shared or not
         between the actor and the critic (this saves computation time)
-    """
+    :param layer_norm: Whether to apply layer normalization after each linear layer
+        in the Q networks (default: False)
+"""
 
     features_extractor: BaseFeaturesExtractor
 
@@ -949,6 +951,7 @@ class ContinuousCritic(BaseModel):
         normalize_images: bool = True,
         n_critics: int = 2,
         share_features_extractor: bool = True,
+        layer_norm: bool = False,
     ):
         super().__init__(
             observation_space,
@@ -963,7 +966,14 @@ class ContinuousCritic(BaseModel):
         self.n_critics = n_critics
         self.q_networks: list[nn.Module] = []
         for idx in range(n_critics):
-            q_net_list = create_mlp(features_dim + action_dim, 1, net_arch, activation_fn)
+            post_linear_modules = [nn.LayerNorm] if layer_norm else None
+            q_net_list = create_mlp(
+                features_dim + action_dim,
+                1,
+                net_arch,
+                activation_fn,
+                post_linear_modules=post_linear_modules
+            )
             q_net = nn.Sequential(*q_net_list)
             self.add_module(f"qf{idx}", q_net)
             self.q_networks.append(q_net)
