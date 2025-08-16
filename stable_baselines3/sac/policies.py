@@ -206,7 +206,7 @@ class SACPolicy(BasePolicy):
     :param n_critics: Number of critic networks to create.
     :param share_features_extractor: Whether to share or not the features extractor
         between the actor and the critic (this saves computation time)
-    :param layer_norm: Whether to apply layer normalization after each linear layer
+    :param critic_layer_norm: Whether to apply layer normalization after each linear layer
         in the Q networks (default: False)
     """
 
@@ -232,7 +232,7 @@ class SACPolicy(BasePolicy):
         optimizer_kwargs: Optional[dict[str, Any]] = None,
         n_critics: int = 2,
         share_features_extractor: bool = False,
-        layer_norm: bool = False,
+        critic_layer_norm: bool = False,
     ):
         super().__init__(
             observation_space,
@@ -274,7 +274,7 @@ class SACPolicy(BasePolicy):
                 "n_critics": n_critics,
                 "net_arch": critic_arch,
                 "share_features_extractor": share_features_extractor,
-                "layer_norm": layer_norm,
+                "critic_layer_norm": critic_layer_norm,
             }
         )
 
